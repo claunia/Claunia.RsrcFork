@@ -7,7 +7,8 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Claunia.RsrcFork.CLI</RootNamespace>
     <AssemblyName>Claunia.RsrcFork.CLI</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <ReleaseVersion>1.0</ReleaseVersion>
+    <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

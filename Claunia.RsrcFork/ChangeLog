@@ -1,5 +1,10 @@
 2016-09-02  Natalia Portillo  <claunia@claunia.com>
 
+	* Claunia.RsrcFork.csproj: Downgrade framework requisites to
+	4.0 and set version.
+
+2016-09-02  Natalia Portillo  <claunia@claunia.com>
+
 	* Types.cs:
 	* Structs.cs:
 	* Resource.cs:
