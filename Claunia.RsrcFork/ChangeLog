@@ -1,0 +1,11 @@
+2016-09-02  Natalia Portillo  <claunia@claunia.com>
+
+	* Types.cs:
+	* Structs.cs:
+	* Resource.cs:
+	* ResourceFork.cs:
+	* Claunia.RsrcFork.csproj:
+	* AssemblyInfo.cs: Added code for handling resource forks when
+	they are in the data fork without headers (not Macbinary,
+	neither AppleDouble, are supported).
+

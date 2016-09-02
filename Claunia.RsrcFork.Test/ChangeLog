@@ -1,0 +1,12 @@
+2016-09-02  Natalia Portillo  <claunia@claunia.com>
+
+	* Test.cs:
+	* packages.config:
+	* UDIF.rsrc:
+	* DiskCopy6.rsrc:
+	* DiskCopy42.rsrc:
+	* Claunia.RsrcFork.Test.csproj:
+	* SelfMountingImage.rsrc: Added code for handling resource
+	forks when they are in the data fork without headers (not
+	Macbinary, neither AppleDouble, are supported).
+
