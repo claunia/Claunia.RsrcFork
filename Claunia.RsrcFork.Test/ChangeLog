@@ -1,3 +1,7 @@
+2016-09-06  Natalia Portillo  <claunia@claunia.com>
+
+	* Test.cs: Added support for decoding "vers" resource.
+
 2016-09-02  Natalia Portillo  <claunia@claunia.com>
 
 	* Claunia.RsrcFork.Test.csproj: Downgrade framework requisites

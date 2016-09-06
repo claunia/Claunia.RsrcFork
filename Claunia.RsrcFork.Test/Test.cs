@@ -26,6 +26,7 @@
 
 using System.IO;
 using NUnit.Framework;
+using Resources;
 
 namespace Claunia.RsrcFork.Test
 {
@@ -70,6 +71,15 @@ namespace Claunia.RsrcFork.Test
 
             string versStr = vers.GetName(1);
             Assert.IsNull(versStr);
+
+            Version versDec = new Version(vers1);
+            Assert.AreEqual(6, versDec.MajorVersion);
+            Assert.AreEqual(40, versDec.MinorVersion);
+            Assert.AreEqual(Version.DevelopmentStage.Final, versDec.DevStage);
+            Assert.AreEqual(0, versDec.PreReleaseVersion);
+            Assert.AreEqual(0, versDec.RegionCode);
+            Assert.AreEqual("Disk Copy", versDec.VersionString);
+            Assert.AreEqual("4.2, data checksum=$A5147F7E", versDec.VersionMessage);
         }
 
         [Test]
@@ -121,6 +131,16 @@ namespace Claunia.RsrcFork.Test
             Assert.AreEqual(224, bcem.GetLength(128));
             string bceSStr = bceS.GetName(128);
             Assert.IsNull(bceSStr);
+
+            byte[] vers1 = vers.GetResource(1);
+            Version versDec = new Version(vers1);
+            Assert.AreEqual(6, versDec.MajorVersion);
+            Assert.AreEqual(40, versDec.MinorVersion);
+            Assert.AreEqual(Version.DevelopmentStage.Final, versDec.DevStage);
+            Assert.AreEqual(0, versDec.PreReleaseVersion);
+            Assert.AreEqual(0, versDec.RegionCode);
+            Assert.AreEqual("6.4 Disk Copy", versDec.VersionString);
+            Assert.AreEqual("Mac? OS HFS 1680K disk image\rCRC28: $07213FB7", versDec.VersionMessage);
         }
 
         [Test]
@@ -159,6 +179,18 @@ namespace Claunia.RsrcFork.Test
             Assert.AreEqual(28, bndl.GetLength(128));
             string bndlStr = bndl.GetName(128);
             Assert.IsNull(bndlStr);
+
+            Resource vers = rsrc.GetResource(0x76657273);
+            Assert.IsNotNull(vers);
+            byte[] vers1 = vers.GetResource(1);
+            Version versDec = new Version(vers1);
+            Assert.AreEqual(1, versDec.MajorVersion);
+            Assert.AreEqual(10, versDec.MinorVersion);
+            Assert.AreEqual(Version.DevelopmentStage.Beta, versDec.DevStage);
+            Assert.AreEqual(6, versDec.PreReleaseVersion);
+            Assert.AreEqual(0, versDec.RegionCode);
+            Assert.AreEqual("1.1b6", versDec.VersionString);
+            Assert.AreEqual("1.1b6, Copyright 1997-2001 Apple Computer, Inc.", versDec.VersionMessage);
         }
 
         [Test]
@@ -187,6 +219,9 @@ namespace Claunia.RsrcFork.Test
             Assert.AreEqual(1544, plst.GetLength(0));
             string plstStr = plst.GetName(0);
             Assert.IsNull(plstStr);
+
+            Resource vers = rsrc.GetResource(0x76657273);
+            Assert.IsNull(vers);
         }
     }
 }

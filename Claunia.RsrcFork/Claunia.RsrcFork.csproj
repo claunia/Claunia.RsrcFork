@@ -38,6 +38,8 @@
     <Compile Include="Resource.cs" />
     <Compile Include="Structs.cs" />
     <Compile Include="Types.cs" />
+    <Compile Include="Resources\Version.cs" />
+    <Compile Include="PascalString.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md">
@@ -50,6 +52,9 @@
       <Link>LICENSE</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

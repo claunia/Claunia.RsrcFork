@@ -1,5 +1,12 @@
 2016-09-06  Natalia Portillo  <claunia@claunia.com>
 
+	* PascalString.cs:
+	* Version.cs:
+	* Claunia.RsrcFork.csproj: Added support for decoding "vers"
+	resource.
+
+2016-09-06  Natalia Portillo  <claunia@claunia.com>
+
 	* Types.cs: Added new resource OSTypes.
 
 2016-09-06  Natalia Portillo  <claunia@claunia.com>
