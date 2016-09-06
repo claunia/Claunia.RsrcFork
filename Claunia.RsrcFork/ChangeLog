@@ -1,3 +1,9 @@
+2016-09-06  Natalia Portillo  <claunia@claunia.com>
+
+	* Resource.cs: Added method to check if an ID exists.
+
+	* ResourceFork.cs: Corrected check of offsets.
+
 2016-09-02  Natalia Portillo  <claunia@claunia.com>
 
 	* Claunia.RsrcFork.csproj: Downgrade framework requisites to

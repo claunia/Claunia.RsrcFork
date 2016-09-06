@@ -162,6 +162,11 @@ namespace Claunia.RsrcFork
         {
             return ids.ToArray();
         }
+
+        public bool ContainsId(short id)
+        {
+            return ids.Contains(id);
+        }
     }
 }
 

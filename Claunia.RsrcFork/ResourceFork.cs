@@ -79,7 +79,7 @@ namespace Claunia.RsrcFork
             rsrcStream.Read(tmp, 0, 4);
             header.resourceMapLen = BitConverter.ToInt32(tmp.Reverse().ToArray(), 0);
 
-            if(header.resourceDataOff <= 0 || header.resourceDataOff <= 0 || header.resourceDataLen <= 0 || header.resourceMapLen <= 0)
+            if(header.resourceDataOff <= 0 || header.resourceMapOff <= 0 || header.resourceDataLen <= 0 || header.resourceMapLen <= 0)
                 throw new InvalidCastException("Not a resource fork");
 
             if(header.resourceDataOff + header.resourceDataLen > rsrcStream.Length ||
