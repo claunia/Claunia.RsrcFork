@@ -1,5 +1,9 @@
 2016-09-06  Natalia Portillo  <claunia@claunia.com>
 
+	* Types.cs: Added new resource OSTypes.
+
+2016-09-06  Natalia Portillo  <claunia@claunia.com>
+
 	* Resource.cs: Added method to check if an ID exists.
 
 	* ResourceFork.cs: Corrected check of offsets.
