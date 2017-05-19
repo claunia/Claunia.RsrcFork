@@ -1,3 +1,7 @@
+2017-05-19  Natalia Portillo  <claunia@claunia.com>
+
+	* Claunia.RsrcFork.csproj: Change formatting in csproj file.
+
 2016-09-06  Natalia Portillo  <claunia@claunia.com>
 
 	* PascalString.cs:
