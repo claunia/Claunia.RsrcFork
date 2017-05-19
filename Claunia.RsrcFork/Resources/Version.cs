@@ -67,7 +67,6 @@ namespace Resources
             tmpStr = new byte[resource[6] + 1];
             Array.Copy(resource, 6, tmpStr, 0, tmpStr.Length);
             VersionString = PascalString.GetString(tmpStr);
-            System.Console.WriteLine("{0} == {1}, \"{2}\"", resource[6], tmpStr.Length, VersionString);
             tmpMsg = new byte[resource[6 + tmpStr.Length] + 1];
             Array.Copy(resource, 6 + tmpStr.Length, tmpMsg, 0, tmpMsg.Length);
             VersionMessage = PascalString.GetString(tmpMsg);
