@@ -30,28 +30,71 @@ using Claunia.RsrcFork;
 
 namespace Resources
 {
+    /// <summary>
+    /// This class handles the "VERS" resource fork
+    /// </summary>
     public class Version
     {
         static uint ostype = 0x76657273;
 
         #region On-disk structure
+        /// <summary>
+        /// Major version.
+        /// </summary>
         public byte MajorVersion;
+        /// <summary>
+        /// Minor version.
+        /// </summary>
         public byte MinorVersion;
+        /// <summary>
+        /// Development stage.
+        /// </summary>
         public DevelopmentStage DevStage;
+        /// <summary>
+        /// Pre-release version.
+        /// </summary>
         public byte PreReleaseVersion;
+        /// <summary>
+        /// Region code.
+        /// </summary>
         public ushort RegionCode;
+        /// <summary>
+        /// Version string.
+        /// </summary>
         public string VersionString;
+        /// <summary>
+        /// Version message.
+        /// </summary>
         public string VersionMessage;
         #endregion
 
+        /// <summary>
+        /// Known development stages
+        /// </summary>
         public enum DevelopmentStage : byte
         {
+            /// <summary>
+            /// Pre-alpha.
+            /// </summary>
             PreAlpha = 0x20,
+            /// <summary>
+            /// Alpha.
+            /// </summary>
             Alpha = 0x40,
+            /// <summary>
+            /// Beta.
+            /// </summary>
             Beta = 0x60,
+            /// <summary>
+            /// Final release.
+            /// </summary>
             Final = 0x80
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:Resources.Version"/> class.
+        /// </summary>
+        /// <param name="resource">Byte array containing the "VERS" resource.</param>
         public Version(byte[] resource)
         {
             byte[] tmpShort, tmpStr, tmpMsg;
@@ -72,6 +115,10 @@ namespace Resources
             VersionMessage = PascalString.GetString(tmpMsg);
         }
 
+        /// <summary>
+        /// Gets a byte array with the "VERS" resource contained by this instance.
+        /// </summary>
+        /// <returns>The "VERS" resource.</returns>
         public byte[] GetBytes()
         {
             byte[] tmpShort, tmpStr, tmpMsg;
@@ -92,6 +139,10 @@ namespace Resources
             return vers;
         }
 
+        /// <summary>
+        /// Gets the OSTYPE of this resource.
+        /// </summary>
+        /// <value>The OSTYPE.</value>
         public static uint OSType {
             get {
                 return ostype;

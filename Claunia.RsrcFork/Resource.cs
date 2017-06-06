@@ -32,6 +32,9 @@ using System.Text;
 
 namespace Claunia.RsrcFork
 {
+    /// <summary>
+    /// This class represents a resource type.
+    /// </summary>
     public class Resource
     {
         readonly Dictionary<short, string> resourceNames;
@@ -47,7 +50,7 @@ namespace Claunia.RsrcFork
         }
 
         /// <summary>
-        /// Initializates the specified resource type
+        /// Initializates the specified resource type.
         /// </summary>
         /// <param name="stream">Stream where the resources of this reside.</param>
         /// <param name="resources">How many resource of this type are.</param>
@@ -116,7 +119,7 @@ namespace Claunia.RsrcFork
         }
 
         /// <summary>
-        /// Gets the name of the specified resource id, or null if there is no name
+        /// Gets the name of the specified resource id, or null if there is no name.
         /// </summary>
         /// <returns>The name.</returns>
         /// <param name="id">Identifier.</param>
@@ -127,7 +130,7 @@ namespace Claunia.RsrcFork
         }
 
         /// <summary>
-        /// Gets the resource contents
+        /// Gets the resource contents.
         /// </summary>
         /// <returns>The resource.</returns>
         /// <param name="id">Identifier.</param>
@@ -152,17 +155,31 @@ namespace Claunia.RsrcFork
             return resource;
         }
 
+        /// <summary>
+        /// Gets the length of the resource specified by ID.
+        /// </summary>
+        /// <returns>The length.</returns>
+        /// <param name="id">Resource identifier.</param>
         public long GetLength(short id)
         {
             ResourceData data;
             return !resources.TryGetValue(id, out data) ? 0 : data.length;
         }
 
+        /// <summary>
+        /// Gets the IDs of all the resources contained by this instance.
+        /// </summary>
+        /// <returns>The identifiers.</returns>
         public short[] GetIds()
         {
             return ids.ToArray();
         }
 
+        /// <summary>
+        /// Checks if the resource specified by ID is contained by this instance.
+        /// </summary>
+        /// <returns><c>true</c>, if the resource is contained in this instance, <c>false</c> otherwise.</returns>
+        /// <param name="id">Resource identifier.</param>
         public bool ContainsId(short id)
         {
             return ids.Contains(id);

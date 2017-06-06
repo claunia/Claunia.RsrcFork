@@ -27,8 +27,16 @@ using System;
 using System.Text;
 namespace Claunia.RsrcFork
 {
+    /// <summary>
+    /// Contains convertes between .NET and Pascal strings. Only ASCII supported right now.
+    /// </summary>
     public static class PascalString
     {
+        /// <summary>
+        /// Converts an ASCII Pascal string to a .NET string.
+        /// </summary>
+        /// <returns>The .NET string.</returns>
+        /// <param name="PStr">The ASCII Pascal string.</param>
         public static string GetString(byte[] PStr)
         {
             if(PStr == null || PStr[0] >= PStr.Length)
@@ -37,6 +45,11 @@ namespace Claunia.RsrcFork
             return Encoding.ASCII.GetString(PStr, 1, PStr[0]);
         }
 
+        /// <summary>
+        /// Converts a .NET string to an ASCII Pascal string.
+        /// </summary>
+        /// <returns>The ASCII Pascal string.</returns>
+        /// <param name="str">The .NET string.</param>
         public static byte[] GetBytes(string str)
         {
             if(str == null)

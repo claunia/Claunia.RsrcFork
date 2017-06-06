@@ -30,6 +30,9 @@ using System.Linq;
 
 namespace Claunia.RsrcFork
 {
+    /// <summary>
+    /// This class represents a resource fork.
+    /// </summary>
     public class ResourceFork
     {
         Stream rsrcStream;
@@ -40,7 +43,7 @@ namespace Claunia.RsrcFork
         List<uint> osTypes;
 
         /// <summary>
-        /// Initializates a resource fork using a byte array as backend
+        /// Initializates a resource fork using a byte array as backend.
         /// </summary>
         /// <param name="buffer">Buffer.</param>
         public ResourceFork(byte[] buffer)
@@ -50,7 +53,7 @@ namespace Claunia.RsrcFork
         }
 
         /// <summary>
-        /// Initializates a resource fork using a stream as backed
+        /// Initializates a resource fork using a stream as backed.
         /// </summary>
         /// <param name="stream">Stream.</param>
         public ResourceFork(Stream stream)
@@ -65,7 +68,10 @@ namespace Claunia.RsrcFork
                 rsrcStream.Close();
         }
 
-        public void Init()
+        /// <summary>
+        /// Initializes this instance.
+        /// </summary>
+        void Init()
         {
             header = new ResourceHeader();
             byte[] tmp = new byte[4];
