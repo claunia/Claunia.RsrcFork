@@ -62,6 +62,9 @@ namespace Claunia.RsrcFork
             Init();
         }
 
+        /// <summary>
+        /// Cleans up this instances and closes the underlying stream.
+        /// </summary>
         ~ResourceFork()
         {
             if(rsrcStream != null)
