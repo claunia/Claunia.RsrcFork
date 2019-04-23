@@ -4,7 +4,7 @@
 // Author:
 //       Natalia Portillo <claunia@claunia.com>
 //
-// Copyright (c) 2016 © Claunia.com
+// Copyright (c) 2016-2019 Natalia Portillo
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,7 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-// Information about this assembly is defined by the following attributes. 
+// Information about this assembly is defined by the following attributes.
 // Change them to the values specific to your project.
 
 [assembly: AssemblyTitle ("Claunia.RsrcFork.CLI")]
@@ -44,7 +44,7 @@ using System.Runtime.CompilerServices;
 
 [assembly: AssemblyVersion ("1.0.*")]
 
-// The following attributes are used to specify the signing key for the assembly, 
+// The following attributes are used to specify the signing key for the assembly,
 // if desired. See the Mono documentation for more information about signing.
 
 //[assembly: AssemblyDelaySign(false)]

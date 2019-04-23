@@ -4,7 +4,7 @@
 // Author:
 //       Natalia Portillo <claunia@claunia.com>
 //
-// Copyright (c) 2016 © Claunia.com
+// Copyright (c) 2016-2019 Natalia Portillo
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -54,7 +54,7 @@ namespace Claunia.RsrcFork
         {
             if(str == null)
                 return new byte[1];
-            
+
             byte[] str_b = Encoding.ASCII.GetBytes(str);
             byte[] PStr;
 
