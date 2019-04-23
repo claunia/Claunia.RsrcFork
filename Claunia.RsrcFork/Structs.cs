@@ -29,19 +29,19 @@ namespace Claunia.RsrcFork
     struct ResourceHeader
     {
         /// <summary>
-        /// Offset from start of resource fork to resource data
+        ///     Offset from start of resource fork to resource data
         /// </summary>
         public int resourceDataOff;
         /// <summary>
-        /// Offset from start of resource fork to resource map
+        ///     Offset from start of resource fork to resource map
         /// </summary>
         public int resourceMapOff;
         /// <summary>
-        /// Length of resource data
+        ///     Length of resource data
         /// </summary>
         public int resourceDataLen;
         /// <summary>
-        /// Length of resource map
+        ///     Length of resource map
         /// </summary>
         public int resourceMapLen;
     }
@@ -49,31 +49,31 @@ namespace Claunia.RsrcFork
     struct ResourceMap
     {
         /// <summary>
-        /// Copy of the resource fork header
+        ///     Copy of the resource fork header
         /// </summary>
         public ResourceHeader header;
         /// <summary>
-        /// Reserved for handle to next resource map
+        ///     Reserved for handle to next resource map
         /// </summary>
         public uint handleToNextMap;
         /// <summary>
-        /// Reserved for file reference number
+        ///     Reserved for file reference number
         /// </summary>
         public ushort fileRefNo;
         /// <summary>
-        /// Resource fork attributes
+        ///     Resource fork attributes
         /// </summary>
         public ushort attributes;
         /// <summary>
-        /// Offset from start of resource map to resource type list
+        ///     Offset from start of resource map to resource type list
         /// </summary>
         public short typeListOff;
         /// <summary>
-        /// Offset from start of resource map to resource name list
+        ///     Offset from start of resource map to resource name list
         /// </summary>
         public short nameListOff;
         /// <summary>
-        /// Number of types in the map minus 1
+        ///     Number of types in the map minus 1
         /// </summary>
         public ushort numberOfTypes;
     }
@@ -81,15 +81,15 @@ namespace Claunia.RsrcFork
     struct ResourceTypeListItem
     {
         /// <summary>
-        /// Resource type
+        ///     Resource type
         /// </summary>
         public uint type;
         /// <summary>
-        /// Number of resources of this type minus 1
+        ///     Number of resources of this type minus 1
         /// </summary>
         public ushort resources;
         /// <summary>
-        /// Offset from beginning of resource type list to reference list
+        ///     Offset from beginning of resource type list to reference list
         /// </summary>
         public short referenceOff;
     }
@@ -97,25 +97,24 @@ namespace Claunia.RsrcFork
     struct ResourceTypeReferenceListItem
     {
         /// <summary>
-        /// Resource ID
+        ///     Resource ID
         /// </summary>
         public short id;
         /// <summary>
-        /// Offset from beginning of resource name list to resource name. -1 if it does not have a name
+        ///     Offset from beginning of resource name list to resource name. -1 if it does not have a name
         /// </summary>
         public short nameOff;
         /// <summary>
-        /// Resource attributes
+        ///     Resource attributes
         /// </summary>
         public byte attributes;
         /// <summary>
-        /// Offset from beginning of resource data to resource. First byte is <see cref="attributes"/>.
+        ///     Offset from beginning of resource data to resource. First byte is <see cref="attributes" />.
         /// </summary>
         public int dataOff;
         /// <summary>
-        /// Reserved for handle to resource
+        ///     Reserved for handle to resource
         /// </summary>
         public uint handle;
     }
 }
-

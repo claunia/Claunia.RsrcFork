@@ -33,24 +33,18 @@ using System.Text;
 namespace Claunia.RsrcFork
 {
     /// <summary>
-    /// This class represents a resource type.
+    ///     This class represents a resource type.
     /// </summary>
     public class Resource
     {
-        readonly Dictionary<short, string> resourceNames;
+        readonly List<short>                     ids;
+        readonly Dictionary<short, byte[]>       resourceCache;
+        readonly Dictionary<short, string>       resourceNames;
         readonly Dictionary<short, ResourceData> resources;
-        readonly Dictionary<short, byte[]> resourceCache;
-        readonly Stream rsrcStream;
-        readonly List<short> ids;
-
-        struct ResourceData
-        {
-            public long offset;
-            public long length;
-        }
+        readonly Stream                          rsrcStream;
 
         /// <summary>
-        /// Initializates the specified resource type.
+        ///     Initializates the specified resource type.
         /// </summary>
         /// <param name="stream">Stream where the resources of this reside.</param>
         /// <param name="resources">How many resource of this type are.</param>
@@ -58,13 +52,15 @@ namespace Claunia.RsrcFork
         /// <param name="resourceNameOffset">Offset from start of stream to resource name list.</param>
         /// <param name="resourceDataOffset">Offset from start of stream to resource data.</param>
         /// <param name="OSType">Resource type.</param>
-        internal Resource(Stream stream, ushort resources, long referenceListOff, long resourceNameOffset, long resourceDataOffset, uint OSType)
+        internal Resource(Stream stream,             ushort resources, long referenceListOff, long resourceNameOffset,
+                          long   resourceDataOffset, uint   OSType)
         {
             rsrcStream = stream;
-            Dictionary<short, ResourceTypeReferenceListItem> referenceLists = new Dictionary<short, ResourceTypeReferenceListItem>();
-            resourceNames = new Dictionary<short, string>();
+            Dictionary<short, ResourceTypeReferenceListItem> referenceLists =
+                new Dictionary<short, ResourceTypeReferenceListItem>();
+            resourceNames  = new Dictionary<short, string>();
             this.resources = new Dictionary<short, ResourceData>();
-            ids = new List<short>();
+            ids            = new List<short>();
             byte[] tmp;
 
             rsrcStream.Seek(referenceListOff + 2, SeekOrigin.Begin);
@@ -76,11 +72,11 @@ namespace Claunia.RsrcFork
                 item.id = BitConverter.ToInt16(tmp.Reverse().ToArray(), 0);
                 rsrcStream.Read(tmp, 0, 2);
                 item.nameOff = BitConverter.ToInt16(tmp.Reverse().ToArray(), 0);
-                tmp = new byte[4];
+                tmp          = new byte[4];
                 rsrcStream.Read(tmp, 0, 4);
                 item.attributes = tmp[0];
-                tmp[0] = 0;
-                item.dataOff = BitConverter.ToInt32(tmp.Reverse().ToArray(), 0);
+                tmp[0]          = 0;
+                item.dataOff    = BitConverter.ToInt32(tmp.Reverse().ToArray(), 0);
                 rsrcStream.Read(tmp, 0, 4);
                 item.handle = BitConverter.ToUInt32(tmp.Reverse().ToArray(), 0);
 
@@ -90,15 +86,14 @@ namespace Claunia.RsrcFork
 
             foreach(ResourceTypeReferenceListItem item in referenceLists.Values)
             {
-                string name;
+                string       name;
                 ResourceData data = new ResourceData();
 
-                if(item.nameOff == -1)
-                    name = null;
+                if(item.nameOff == -1) name = null;
                 else
                 {
                     rsrcStream.Seek(resourceNameOffset + item.nameOff, SeekOrigin.Begin);
-                    byte nameLen = (byte)rsrcStream.ReadByte();
+                    byte   nameLen   = (byte)rsrcStream.ReadByte();
                     byte[] nameBytes = new byte[nameLen];
                     rsrcStream.Read(nameBytes, 0, nameLen);
                     // TODO: Use MacRoman
@@ -119,7 +114,7 @@ namespace Claunia.RsrcFork
         }
 
         /// <summary>
-        /// Gets the name of the specified resource id, or null if there is no name.
+        ///     Gets the name of the specified resource id, or null if there is no name.
         /// </summary>
         /// <returns>The name.</returns>
         /// <param name="id">Identifier.</param>
@@ -130,7 +125,7 @@ namespace Claunia.RsrcFork
         }
 
         /// <summary>
-        /// Gets the resource contents.
+        ///     Gets the resource contents.
         /// </summary>
         /// <returns>The resource.</returns>
         /// <param name="id">Identifier.</param>
@@ -138,13 +133,11 @@ namespace Claunia.RsrcFork
         {
             byte[] resource;
 
-            if(resourceCache.TryGetValue(id, out resource))
-                return resource;
+            if(resourceCache.TryGetValue(id, out resource)) return resource;
 
             ResourceData data;
 
-            if(!resources.TryGetValue(id, out data))
-                return null;
+            if(!resources.TryGetValue(id, out data)) return null;
 
             resource = new byte[data.length];
             rsrcStream.Seek(data.offset, SeekOrigin.Begin);
@@ -156,7 +149,7 @@ namespace Claunia.RsrcFork
         }
 
         /// <summary>
-        /// Gets the length of the resource specified by ID.
+        ///     Gets the length of the resource specified by ID.
         /// </summary>
         /// <returns>The length.</returns>
         /// <param name="id">Resource identifier.</param>
@@ -167,23 +160,22 @@ namespace Claunia.RsrcFork
         }
 
         /// <summary>
-        /// Gets the IDs of all the resources contained by this instance.
+        ///     Gets the IDs of all the resources contained by this instance.
         /// </summary>
         /// <returns>The identifiers.</returns>
-        public short[] GetIds()
-        {
-            return ids.ToArray();
-        }
+        public short[] GetIds() => ids.ToArray();
 
         /// <summary>
-        /// Checks if the resource specified by ID is contained by this instance.
+        ///     Checks if the resource specified by ID is contained by this instance.
         /// </summary>
         /// <returns><c>true</c>, if the resource is contained in this instance, <c>false</c> otherwise.</returns>
         /// <param name="id">Resource identifier.</param>
-        public bool ContainsId(short id)
+        public bool ContainsId(short id) => ids.Contains(id);
+
+        struct ResourceData
         {
-            return ids.Contains(id);
+            public long offset;
+            public long length;
         }
     }
 }
-

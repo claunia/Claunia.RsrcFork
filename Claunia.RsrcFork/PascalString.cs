@@ -23,51 +23,48 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Text;
+
 namespace Claunia.RsrcFork
 {
     /// <summary>
-    /// Contains convertes between .NET and Pascal strings. Only ASCII supported right now.
+    ///     Contains convertes between .NET and Pascal strings. Only ASCII supported right now.
     /// </summary>
     public static class PascalString
     {
         /// <summary>
-        /// Converts an ASCII Pascal string to a .NET string.
+        ///     Converts an ASCII Pascal string to a .NET string.
         /// </summary>
         /// <returns>The .NET string.</returns>
         /// <param name="PStr">The ASCII Pascal string.</param>
         public static string GetString(byte[] PStr)
         {
-            if(PStr == null || PStr[0] >= PStr.Length)
-                return null;
+            if(PStr == null || PStr[0] >= PStr.Length) return null;
 
             return Encoding.ASCII.GetString(PStr, 1, PStr[0]);
         }
 
         /// <summary>
-        /// Converts a .NET string to an ASCII Pascal string.
+        ///     Converts a .NET string to an ASCII Pascal string.
         /// </summary>
         /// <returns>The ASCII Pascal string.</returns>
         /// <param name="str">The .NET string.</param>
         public static byte[] GetBytes(string str)
         {
-            if(str == null)
-                return new byte[1];
+            if(str == null) return new byte[1];
 
             byte[] str_b = Encoding.ASCII.GetBytes(str);
             byte[] PStr;
 
-            if(str_b.Length >= 256)
-                PStr = new byte[256];
-            else
-                PStr = new byte[str_b.Length + 1];
+            if(str_b.Length >= 256) PStr = new byte[256];
+            else PStr                    = new byte[str_b.Length + 1];
 
             Array.Copy(str_b, 0, PStr, 1, PStr.Length - 1);
-            PStr[0] = (byte)(PStr.Length - 1);
+            PStr[0] = (byte)(PStr.Length              - 1);
 
             return PStr;
         }
     }
 }
-

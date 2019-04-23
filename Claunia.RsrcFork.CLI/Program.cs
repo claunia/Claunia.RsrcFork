@@ -23,16 +23,17 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.IO;
-using System.Text;
 using System.Linq;
+using System.Text;
 
 namespace Claunia.RsrcFork.CLI
 {
     class MainClass
     {
-        public static void Main (string [] args)
+        public static void Main(string[] args)
         {
             Console.WriteLine("Claunia.RsrcFork.CLI");
             Console.WriteLine("© 2016 Natalia Portillo");
@@ -68,20 +69,17 @@ namespace Claunia.RsrcFork.CLI
                     typeBytes = typeBytes.Reverse().ToArray();
                     string typeName = Types.GetName(type);
                     if(typeName != null)
-                        Console.WriteLine("\"{0}\" (0x{1:X8}) - {2}", Encoding.ASCII.GetString(typeBytes), type, typeName);
-                    else
-                        Console.WriteLine("\"{0}\" (0x{1:X8})", Encoding.ASCII.GetString(typeBytes), type);
+                        Console.WriteLine("\"{0}\" (0x{1:X8}) - {2}", Encoding.ASCII.GetString(typeBytes), type,
+                                          typeName);
+                    else Console.WriteLine("\"{0}\" (0x{1:X8})", Encoding.ASCII.GetString(typeBytes), type);
 
                     Resource rez = rsrc.GetResource(type);
-                    Console.WriteLine("{0,6}{1,8}\t{2}", "ID", "Length", "Name");
+                    Console.WriteLine("{0,6}{1,8}\t{2}", "ID",     "Length",   "Name");
                     Console.WriteLine("{0,6}{1,8}--{2}", "------", "--------", "----------------");
                     foreach(short id in rez.GetIds())
-                    {
                         if(rez.GetName(id) != null)
                             Console.WriteLine("{0,6}{1,8}\t\"{2}\"", id, rez.GetLength(id), rez.GetName(id));
-                        else
-                            Console.WriteLine("{0,6}{1,8}", id, rez.GetLength(id));
-                    }
+                        else Console.WriteLine("{0,6}{1,8}",         id, rez.GetLength(id));
 
                     Console.WriteLine();
                 }
@@ -130,14 +128,15 @@ namespace Claunia.RsrcFork.CLI
                     Resource rez = rsrc.GetResource(type);
                     foreach(short id in rez.GetIds())
                     {
-                        outStream = new FileStream(Path.Combine(args[2], Encoding.ASCII.GetString(typeBytes), string.Format("{0}", id)), FileMode.Create, FileAccess.ReadWrite);
+                        outStream =
+                            new
+                                FileStream(Path.Combine(args[2], Encoding.ASCII.GetString(typeBytes), string.Format("{0}", id)),
+                                           FileMode.Create, FileAccess.ReadWrite);
                         byte[] rez_b = rez.GetResource(id);
                         outStream.Write(rez_b, 0, rez_b.Length);
                         outStream.Close();
                     }
                 }
-
-                return;
             }
         }
 

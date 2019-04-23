@@ -31,19 +31,19 @@ using System.Linq;
 namespace Claunia.RsrcFork
 {
     /// <summary>
-    /// This class represents a resource fork.
+    ///     This class represents a resource fork.
     /// </summary>
     public class ResourceFork
     {
-        Stream rsrcStream;
-        ResourceHeader header;
-        ResourceMap map;
+        ResourceHeader                         header;
+        ResourceMap                            map;
+        List<uint>                             osTypes;
+        Dictionary<uint, Resource>             resourceCache;
         Dictionary<uint, ResourceTypeListItem> resourceTypeList;
-        Dictionary<uint, Resource> resourceCache;
-        List<uint> osTypes;
+        readonly Stream                        rsrcStream;
 
         /// <summary>
-        /// Initializates a resource fork using a byte array as backend.
+        ///     Initializates a resource fork using a byte array as backend.
         /// </summary>
         /// <param name="buffer">Buffer.</param>
         public ResourceFork(byte[] buffer)
@@ -53,7 +53,7 @@ namespace Claunia.RsrcFork
         }
 
         /// <summary>
-        /// Initializates a resource fork using a stream as backed.
+        ///     Initializates a resource fork using a stream as backed.
         /// </summary>
         /// <param name="stream">Stream.</param>
         public ResourceFork(Stream stream)
@@ -63,16 +63,15 @@ namespace Claunia.RsrcFork
         }
 
         /// <summary>
-        /// Cleans up this instances and closes the underlying stream.
+        ///     Cleans up this instances and closes the underlying stream.
         /// </summary>
         ~ResourceFork()
         {
-            if(rsrcStream != null)
-                rsrcStream.Dispose();
+            if(rsrcStream != null) rsrcStream.Dispose();
         }
 
         /// <summary>
-        /// Initializes this instance.
+        ///     Initializes this instance.
         /// </summary>
         void Init()
         {
@@ -88,14 +87,14 @@ namespace Claunia.RsrcFork
             rsrcStream.Read(tmp, 0, 4);
             header.resourceMapLen = BitConverter.ToInt32(tmp.Reverse().ToArray(), 0);
 
-            if(header.resourceDataOff <= 0 || header.resourceMapOff <= 0 || header.resourceDataLen <= 0 || header.resourceMapLen <= 0)
-                throw new InvalidCastException("Not a resource fork");
+            if(header.resourceDataOff <= 0 || header.resourceMapOff <= 0 || header.resourceDataLen <= 0 ||
+               header.resourceMapLen  <= 0) throw new InvalidCastException("Not a resource fork");
 
             if(header.resourceDataOff + header.resourceDataLen > rsrcStream.Length ||
-               header.resourceMapOff + header.resourceMapLen > rsrcStream.Length)
+               header.resourceMapOff  + header.resourceMapLen  > rsrcStream.Length)
                 throw new InvalidCastException("Not a resource fork");
 
-            map = new ResourceMap();
+            map        = new ResourceMap();
             map.header = new ResourceHeader();
             rsrcStream.Seek(header.resourceMapOff, SeekOrigin.Begin);
             rsrcStream.Read(tmp, 0, 4);
@@ -109,13 +108,13 @@ namespace Claunia.RsrcFork
 
             if(map.header.resourceDataOff != header.resourceDataOff ||
                map.header.resourceDataLen != header.resourceDataLen ||
-               map.header.resourceMapOff != header.resourceMapOff ||
-               map.header.resourceMapLen != header.resourceMapLen)
+               map.header.resourceMapOff  != header.resourceMapOff  ||
+               map.header.resourceMapLen  != header.resourceMapLen)
                 throw new InvalidCastException("Header copy is not same as header.");
 
             rsrcStream.Read(tmp, 0, 4);
             map.handleToNextMap = BitConverter.ToUInt32(tmp.Reverse().ToArray(), 0);
-            tmp = new byte[2];
+            tmp                 = new byte[2];
             rsrcStream.Read(tmp, 0, 2);
             map.fileRefNo = BitConverter.ToUInt16(tmp.Reverse().ToArray(), 0);
             rsrcStream.Read(tmp, 0, 2);
@@ -132,14 +131,15 @@ namespace Claunia.RsrcFork
             map.numberOfTypes = BitConverter.ToUInt16(tmp.Reverse().ToArray(), 0);
 
             resourceTypeList = new Dictionary<uint, ResourceTypeListItem>();
-            osTypes = new List<uint>();
+            osTypes          = new List<uint>();
 
-            for(int i = 0; i <= map.numberOfTypes; i++) {
+            for(int i = 0; i <= map.numberOfTypes; i++)
+            {
                 ResourceTypeListItem typeList = new ResourceTypeListItem();
                 tmp = new byte[4];
                 rsrcStream.Read(tmp, 0, 4);
                 typeList.type = BitConverter.ToUInt32(tmp.Reverse().ToArray(), 0);
-                tmp = new byte[2];
+                tmp           = new byte[2];
                 rsrcStream.Read(tmp, 0, 2);
                 typeList.resources = BitConverter.ToUInt16(tmp.Reverse().ToArray(), 0);
                 rsrcStream.Read(tmp, 0, 2);
@@ -153,7 +153,7 @@ namespace Claunia.RsrcFork
         }
 
         /// <summary>
-        /// Gets the resources with indicated type
+        ///     Gets the resources with indicated type
         /// </summary>
         /// <returns>The resource.</returns>
         /// <param name="OSType">OSType.</param>
@@ -161,14 +161,15 @@ namespace Claunia.RsrcFork
         {
             Resource rsrc;
 
-            if(resourceCache.TryGetValue(OSType, out rsrc))
-               return rsrc;
+            if(resourceCache.TryGetValue(OSType, out rsrc)) return rsrc;
 
             ResourceTypeListItem typeList;
-            if(!resourceTypeList.TryGetValue(OSType, out typeList))
-                return null;
+            if(!resourceTypeList.TryGetValue(OSType, out typeList)) return null;
 
-            rsrc = new Resource(rsrcStream, (ushort)(typeList.resources + 1), header.resourceMapOff + map.typeListOff + typeList.referenceOff - 2, header.resourceMapOff + map.nameListOff, header.resourceDataOff, OSType);
+            rsrc = new Resource(rsrcStream, (ushort)(typeList.resources + 1),
+                                header.resourceMapOff + map.typeListOff + typeList.referenceOff - 2,
+                                header.resourceMapOff                                           + map.nameListOff,
+                                header.resourceDataOff, OSType);
 
             resourceCache.Add(OSType, rsrc);
 
@@ -176,22 +177,15 @@ namespace Claunia.RsrcFork
         }
 
         /// <summary>
-        /// Gets all OSTypes stored in this resource fork
+        ///     Gets all OSTypes stored in this resource fork
         /// </summary>
         /// <returns>The types.</returns>
-        public uint[] GetTypes()
-        {
-            return osTypes.ToArray();
-        }
+        public uint[] GetTypes() => osTypes.ToArray();
 
         /// <summary>
-        /// Returns true if the specified OSType is present in this resource fork.
+        ///     Returns true if the specified OSType is present in this resource fork.
         /// </summary>
         /// <param name="OSType">OSType.</param>
-        public bool ContainsKey(uint OSType)
-        {
-            return resourceTypeList.ContainsKey(OSType);
-        }
+        public bool ContainsKey(uint OSType) => resourceTypeList.ContainsKey(OSType);
     }
 }
-

@@ -25,24 +25,25 @@
 // THE SOFTWARE.
 
 using System;
-using System.Text;
 using System.Linq;
+using System.Text;
 
 namespace Claunia.RsrcFork
 {
     /// <summary>
-    /// This class contains static methods for OSTYPE handling.
+    ///     This class contains static methods for OSTYPE handling.
     /// </summary>
     public static class Types
     {
         /// <summary>
-        /// Gets a descriptive name of a resource from its OSTYPE.
+        ///     Gets a descriptive name of a resource from its OSTYPE.
         /// </summary>
         /// <returns>The name corresponding to the specified OSTYPE.</returns>
         /// <param name="OSType">The OSTYPE.</param>
         public static string GetName(uint OSType)
         {
-            switch(OSType) {
+            switch(OSType)
+            {
                 case 0x2E58534C: // ".XSL"
                     return "XML style sheet";
                 case 0x33444D46: // "3DMF"
@@ -683,26 +684,23 @@ namespace Claunia.RsrcFork
                     return "MC680x0 Code";
                 case 0x5F505043: // "_PPC"
                     return "PowerPC Code";
-                default:
-                    return null;
+                default: return null;
             }
         }
 
         /// <summary>
-        /// Gets a descriptive name of a resource from its OSTYPE.
+        ///     Gets a descriptive name of a resource from its OSTYPE.
         /// </summary>
         /// <returns>The name corresponding to the specified OSTYPE.</returns>
         /// <param name="OSType">The OSTYPE.</param>
         public static string GetName(string OSType)
         {
-            if(OSType.Length != 4)
-                return null;
+            if(OSType.Length != 4) return null;
 
             byte[] typB = Encoding.ASCII.GetBytes(OSType);
-            uint type = BitConverter.ToUInt32(typB.Reverse().ToArray(), 0);
+            uint   type = BitConverter.ToUInt32(typB.Reverse().ToArray(), 0);
 
             return GetName(type);
         }
     }
 }
-
