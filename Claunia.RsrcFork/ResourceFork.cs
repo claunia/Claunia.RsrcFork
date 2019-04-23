@@ -68,7 +68,7 @@ namespace Claunia.RsrcFork
         ~ResourceFork()
         {
             if(rsrcStream != null)
-                rsrcStream.Close();
+                rsrcStream.Dispose();
         }
 
         /// <summary>
