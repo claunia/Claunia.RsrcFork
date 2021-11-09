@@ -30,14 +30,10 @@ using System.Text;
 
 namespace Claunia.RsrcFork;
 
-/// <summary>
-///     This class contains static methods for OSTYPE handling.
-/// </summary>
+/// <summary>This class contains static methods for OSTYPE handling.</summary>
 public static class Types
 {
-    /// <summary>
-    ///     Gets a descriptive name of a resource from its OSTYPE.
-    /// </summary>
+    /// <summary>Gets a descriptive name of a resource from its OSTYPE.</summary>
     /// <returns>The name corresponding to the specified OSTYPE.</returns>
     /// <param name="OSType">The OSTYPE.</param>
     public static string GetName(uint OSType)
@@ -688,14 +684,13 @@ public static class Types
         }
     }
 
-    /// <summary>
-    ///     Gets a descriptive name of a resource from its OSTYPE.
-    /// </summary>
+    /// <summary>Gets a descriptive name of a resource from its OSTYPE.</summary>
     /// <returns>The name corresponding to the specified OSTYPE.</returns>
     /// <param name="OSType">The OSTYPE.</param>
     public static string GetName(string OSType)
     {
-        if(OSType.Length != 4) return null;
+        if(OSType.Length != 4)
+            return null;
 
         byte[] typB = Encoding.ASCII.GetBytes(OSType);
         uint   type = BitConverter.ToUInt32(typB.Reverse().ToArray(), 0);

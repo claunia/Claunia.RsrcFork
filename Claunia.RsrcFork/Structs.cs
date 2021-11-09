@@ -26,94 +26,56 @@
 
 namespace Claunia.RsrcFork;
 
-struct ResourceHeader
+internal struct ResourceHeader
 {
-    /// <summary>
-    ///     Offset from start of resource fork to resource data
-    /// </summary>
-    public int resourceDataOff;
-    /// <summary>
-    ///     Offset from start of resource fork to resource map
-    /// </summary>
-    public int resourceMapOff;
-    /// <summary>
-    ///     Length of resource data
-    /// </summary>
-    public int resourceDataLen;
-    /// <summary>
-    ///     Length of resource map
-    /// </summary>
-    public int resourceMapLen;
+    /// <summary>Offset from start of resource fork to resource data</summary>
+    public int ResourceDataOff;
+    /// <summary>Offset from start of resource fork to resource map</summary>
+    public int ResourceMapOff;
+    /// <summary>Length of resource data</summary>
+    public int ResourceDataLen;
+    /// <summary>Length of resource map</summary>
+    public int ResourceMapLen;
 }
 
-struct ResourceMap
+internal struct ResourceMap
 {
-    /// <summary>
-    ///     Copy of the resource fork header
-    /// </summary>
-    public ResourceHeader header;
-    /// <summary>
-    ///     Reserved for handle to next resource map
-    /// </summary>
-    public uint handleToNextMap;
-    /// <summary>
-    ///     Reserved for file reference number
-    /// </summary>
-    public ushort fileRefNo;
-    /// <summary>
-    ///     Resource fork attributes
-    /// </summary>
-    public ushort attributes;
-    /// <summary>
-    ///     Offset from start of resource map to resource type list
-    /// </summary>
-    public short typeListOff;
-    /// <summary>
-    ///     Offset from start of resource map to resource name list
-    /// </summary>
-    public short nameListOff;
-    /// <summary>
-    ///     Number of types in the map minus 1
-    /// </summary>
-    public ushort numberOfTypes;
+    /// <summary>Copy of the resource fork header</summary>
+    public ResourceHeader Header;
+    /// <summary>Reserved for handle to next resource map</summary>
+    public uint HandleToNextMap;
+    /// <summary>Reserved for file reference number</summary>
+    public ushort FileRefNo;
+    /// <summary>Resource fork attributes</summary>
+    public ushort Attributes;
+    /// <summary>Offset from start of resource map to resource type list</summary>
+    public short TypeListOff;
+    /// <summary>Offset from start of resource map to resource name list</summary>
+    public short NameListOff;
+    /// <summary>Number of types in the map minus 1</summary>
+    public ushort NumberOfTypes;
 }
 
-struct ResourceTypeListItem
+internal struct ResourceTypeListItem
 {
-    /// <summary>
-    ///     Resource type
-    /// </summary>
-    public uint type;
-    /// <summary>
-    ///     Number of resources of this type minus 1
-    /// </summary>
-    public ushort resources;
-    /// <summary>
-    ///     Offset from beginning of resource type list to reference list
-    /// </summary>
-    public short referenceOff;
+    /// <summary>Resource type</summary>
+    public uint Type;
+    /// <summary>Number of resources of this type minus 1</summary>
+    public ushort Resources;
+    /// <summary>Offset from beginning of resource type list to reference list</summary>
+    public short ReferenceOff;
 }
 
-struct ResourceTypeReferenceListItem
+internal struct ResourceTypeReferenceListItem
 {
-    /// <summary>
-    ///     Resource ID
-    /// </summary>
-    public short id;
-    /// <summary>
-    ///     Offset from beginning of resource name list to resource name. -1 if it does not have a name
-    /// </summary>
-    public short nameOff;
-    /// <summary>
-    ///     Resource attributes
-    /// </summary>
-    public byte attributes;
-    /// <summary>
-    ///     Offset from beginning of resource data to resource. First byte is <see cref="attributes" />.
-    /// </summary>
-    public int dataOff;
-    /// <summary>
-    ///     Reserved for handle to resource
-    /// </summary>
-    public uint handle;
+    /// <summary>Resource ID</summary>
+    public short Id;
+    /// <summary>Offset from beginning of resource name list to resource name. -1 if it does not have a name</summary>
+    public short NameOff;
+    /// <summary>Resource attributes</summary>
+    public byte Attributes;
+    /// <summary>Offset from beginning of resource data to resource. First byte is <see cref="Attributes" />.</summary>
+    public int DataOff;
+    /// <summary>Reserved for handle to resource</summary>
+    public uint Handle;
 }

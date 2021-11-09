@@ -30,43 +30,27 @@ using Claunia.RsrcFork;
 
 namespace Resources;
 
-/// <summary>
-///     This class handles the "VERS" resource fork
-/// </summary>
+/// <summary>This class handles the "VERS" resource fork</summary>
 public class Version
 {
-    /// <summary>
-    ///     Known development stages
-    /// </summary>
+    /// <summary>Known development stages</summary>
     public enum DevelopmentStage : byte
     {
-        /// <summary>
-        ///     Pre-alpha.
-        /// </summary>
+        /// <summary>Pre-alpha.</summary>
         PreAlpha = 0x20,
-        /// <summary>
-        ///     Alpha.
-        /// </summary>
+        /// <summary>Alpha.</summary>
         Alpha = 0x40,
-        /// <summary>
-        ///     Beta.
-        /// </summary>
+        /// <summary>Beta.</summary>
         Beta = 0x60,
-        /// <summary>
-        ///     Final release.
-        /// </summary>
+        /// <summary>Final release.</summary>
         Final = 0x80
     }
 
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="T:Resources.Version" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="T:Resources.Version" /> class.</summary>
     /// <param name="resource">Byte array containing the "VERS" resource.</param>
     public Version(byte[] resource)
     {
-        byte[] tmpShort, tmpStr, tmpMsg;
-
-        tmpShort = new byte[2];
+        byte[] tmpShort = new byte[2];
 
         MajorVersion      = BCDToNumber(resource[0]);
         MinorVersion      = BCDToNumber(resource[1]);
@@ -74,81 +58,62 @@ public class Version
         PreReleaseVersion = BCDToNumber(resource[3]);
         Array.Copy(resource, 4, tmpShort, 0, 2);
         RegionCode = BitConverter.ToUInt16(tmpShort.Reverse().ToArray(), 0);
-        tmpStr     = new byte[resource[6] + 1];
+        byte[] tmpStr = new byte[resource[6] + 1];
         Array.Copy(resource, 6, tmpStr, 0, tmpStr.Length);
         VersionString = PascalString.GetString(tmpStr);
-        tmpMsg        = new byte[resource[6 + tmpStr.Length] + 1];
+        byte[] tmpMsg = new byte[resource[6 + tmpStr.Length] + 1];
         Array.Copy(resource, 6 + tmpStr.Length, tmpMsg, 0, tmpMsg.Length);
         VersionMessage = PascalString.GetString(tmpMsg);
     }
 
-    /// <summary>
-    ///     Gets the OSTYPE of this resource.
-    /// </summary>
+    /// <summary>Gets the OSTYPE of this resource.</summary>
     /// <value>The OSTYPE.</value>
     public static uint OSType { get; } = 0x76657273;
 
-    /// <summary>
-    ///     Gets a byte array with the "VERS" resource contained by this instance.
-    /// </summary>
+    /// <summary>Gets a byte array with the "VERS" resource contained by this instance.</summary>
     /// <returns>The "VERS" resource.</returns>
     public byte[] GetBytes()
     {
-        byte[] tmpShort, tmpStr, tmpMsg;
-        tmpShort = BitConverter.GetBytes(RegionCode).Reverse().ToArray();
-        tmpStr   = PascalString.GetBytes(VersionString);
-        tmpMsg   = PascalString.GetBytes(VersionMessage);
-
-        byte[] vers = new byte[6 + tmpStr.Length + tmpMsg.Length];
+        byte[] tmpShort = BitConverter.GetBytes(RegionCode).Reverse().ToArray();
+        byte[] tmpStr   = PascalString.GetBytes(VersionString);
+        byte[] tmpMsg   = PascalString.GetBytes(VersionMessage);
+        byte[] vers     = new byte[6 + tmpStr.Length + tmpMsg.Length];
 
         vers[0] = NumberToBCD(MajorVersion);
         vers[1] = NumberToBCD(MinorVersion);
         vers[2] = (byte)DevStage;
         vers[3] = NumberToBCD(PreReleaseVersion);
-        Array.Copy(tmpShort, 0, vers, 4,                 2);
-        Array.Copy(tmpStr,   0, vers, 6,                 tmpStr.Length);
-        Array.Copy(tmpMsg,   0, vers, 6 + tmpStr.Length, tmpMsg.Length);
+        Array.Copy(tmpShort, 0, vers, 4, 2);
+        Array.Copy(tmpStr, 0, vers, 6, tmpStr.Length);
+        Array.Copy(tmpMsg, 0, vers, 6 + tmpStr.Length, tmpMsg.Length);
 
         return vers;
     }
 
-    byte BCDToNumber(byte bcd) => Convert.ToByte(string.Format("{0:X2}", bcd), 10);
+    byte BCDToNumber(byte bcd) => Convert.ToByte($"{bcd:X2}", 10);
 
     byte NumberToBCD(byte number)
     {
-        if(number >= 100) number = 99;
+        if(number >= 100)
+            number = 99;
 
-        return Convert.ToByte(string.Format("{0:D2}", number), 16);
+        return Convert.ToByte($"{number:D2}", 16);
     }
 
     #region On-disk structure
-    /// <summary>
-    ///     Major version.
-    /// </summary>
+    /// <summary>Major version.</summary>
     public byte MajorVersion;
-    /// <summary>
-    ///     Minor version.
-    /// </summary>
+    /// <summary>Minor version.</summary>
     public byte MinorVersion;
-    /// <summary>
-    ///     Development stage.
-    /// </summary>
+    /// <summary>Development stage.</summary>
     public DevelopmentStage DevStage;
-    /// <summary>
-    ///     Pre-release version.
-    /// </summary>
+    /// <summary>Pre-release version.</summary>
     public byte PreReleaseVersion;
-    /// <summary>
-    ///     Region code.
-    /// </summary>
+    /// <summary>Region code.</summary>
     public ushort RegionCode;
-    /// <summary>
-    ///     Version string.
-    /// </summary>
+    /// <summary>Version string.</summary>
     public string VersionString;
-    /// <summary>
-    ///     Version message.
-    /// </summary>
+    /// <summary>Version message.</summary>
     public string VersionMessage;
     #endregion
 }

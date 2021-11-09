@@ -30,161 +30,146 @@ using System.Linq;
 
 namespace Claunia.RsrcFork;
 
-/// <summary>
-///     This class represents a resource fork.
-/// </summary>
+/// <summary>This class represents a resource fork.</summary>
 public class ResourceFork
 {
-    ResourceHeader                         header;
-    ResourceMap                            map;
-    List<uint>                             osTypes;
-    Dictionary<uint, Resource>             resourceCache;
-    Dictionary<uint, ResourceTypeListItem> resourceTypeList;
-    readonly Stream                        rsrcStream;
+    readonly Stream                        _rsrcStream;
+    ResourceHeader                         _header;
+    ResourceMap                            _map;
+    List<uint>                             _osTypes;
+    Dictionary<uint, Resource>             _resourceCache;
+    Dictionary<uint, ResourceTypeListItem> _resourceTypeList;
 
-    /// <summary>
-    ///     Initializates a resource fork using a byte array as backend.
-    /// </summary>
+    /// <summary>Initializates a resource fork using a byte array as backend.</summary>
     /// <param name="buffer">Buffer.</param>
     public ResourceFork(byte[] buffer)
     {
-        rsrcStream = new MemoryStream(buffer, false);
+        _rsrcStream = new MemoryStream(buffer, false);
         Init();
     }
 
-    /// <summary>
-    ///     Initializates a resource fork using a stream as backed.
-    /// </summary>
+    /// <summary>Initializates a resource fork using a stream as backed.</summary>
     /// <param name="stream">Stream.</param>
     public ResourceFork(Stream stream)
     {
-        rsrcStream = stream;
+        _rsrcStream = stream;
         Init();
     }
 
-    /// <summary>
-    ///     Cleans up this instances and closes the underlying stream.
-    /// </summary>
-    ~ResourceFork()
-    {
-        if(rsrcStream != null) rsrcStream.Dispose();
-    }
+    /// <summary>Cleans up this instances and closes the underlying stream.</summary>
+    ~ResourceFork() => _rsrcStream?.Dispose();
 
-    /// <summary>
-    ///     Initializes this instance.
-    /// </summary>
+    /// <summary>Initializes this instance.</summary>
     void Init()
     {
-        header = new ResourceHeader();
+        _header = new ResourceHeader();
         byte[] tmp = new byte[4];
-        rsrcStream.Seek(0, SeekOrigin.Begin);
-        rsrcStream.Read(tmp, 0, 4);
-        header.resourceDataOff = BitConverter.ToInt32(tmp.Reverse().ToArray(), 0);
-        rsrcStream.Read(tmp, 0, 4);
-        header.resourceMapOff = BitConverter.ToInt32(tmp.Reverse().ToArray(), 0);
-        rsrcStream.Read(tmp, 0, 4);
-        header.resourceDataLen = BitConverter.ToInt32(tmp.Reverse().ToArray(), 0);
-        rsrcStream.Read(tmp, 0, 4);
-        header.resourceMapLen = BitConverter.ToInt32(tmp.Reverse().ToArray(), 0);
+        _rsrcStream.Seek(0, SeekOrigin.Begin);
+        _rsrcStream.Read(tmp, 0, 4);
+        _header.ResourceDataOff = BitConverter.ToInt32(tmp.Reverse().ToArray(), 0);
+        _rsrcStream.Read(tmp, 0, 4);
+        _header.ResourceMapOff = BitConverter.ToInt32(tmp.Reverse().ToArray(), 0);
+        _rsrcStream.Read(tmp, 0, 4);
+        _header.ResourceDataLen = BitConverter.ToInt32(tmp.Reverse().ToArray(), 0);
+        _rsrcStream.Read(tmp, 0, 4);
+        _header.ResourceMapLen = BitConverter.ToInt32(tmp.Reverse().ToArray(), 0);
 
-        if(header.resourceDataOff <= 0 || header.resourceMapOff <= 0 || header.resourceDataLen <= 0 ||
-           header.resourceMapLen  <= 0) throw new InvalidCastException("Not a resource fork");
-
-        if(header.resourceDataOff + header.resourceDataLen > rsrcStream.Length ||
-           header.resourceMapOff  + header.resourceMapLen  > rsrcStream.Length)
+        if(_header.ResourceDataOff <= 0 ||
+           _header.ResourceMapOff  <= 0 ||
+           _header.ResourceDataLen <= 0 ||
+           _header.ResourceMapLen  <= 0)
             throw new InvalidCastException("Not a resource fork");
 
-        map        = new ResourceMap();
-        map.header = new ResourceHeader();
-        rsrcStream.Seek(header.resourceMapOff, SeekOrigin.Begin);
-        rsrcStream.Read(tmp, 0, 4);
-        map.header.resourceDataOff = BitConverter.ToInt32(tmp.Reverse().ToArray(), 0);
-        rsrcStream.Read(tmp, 0, 4);
-        map.header.resourceMapOff = BitConverter.ToInt32(tmp.Reverse().ToArray(), 0);
-        rsrcStream.Read(tmp, 0, 4);
-        map.header.resourceDataLen = BitConverter.ToInt32(tmp.Reverse().ToArray(), 0);
-        rsrcStream.Read(tmp, 0, 4);
-        map.header.resourceMapLen = BitConverter.ToInt32(tmp.Reverse().ToArray(), 0);
+        if(_header.ResourceDataOff + _header.ResourceDataLen > _rsrcStream.Length ||
+           _header.ResourceMapOff  + _header.ResourceMapLen  > _rsrcStream.Length)
+            throw new InvalidCastException("Not a resource fork");
 
-        if(map.header.resourceDataOff != header.resourceDataOff ||
-           map.header.resourceDataLen != header.resourceDataLen ||
-           map.header.resourceMapOff  != header.resourceMapOff  ||
-           map.header.resourceMapLen  != header.resourceMapLen)
+        _map = new ResourceMap
+        {
+            Header = new ResourceHeader()
+        };
+
+        _rsrcStream.Seek(_header.ResourceMapOff, SeekOrigin.Begin);
+        _rsrcStream.Read(tmp, 0, 4);
+        _map.Header.ResourceDataOff = BitConverter.ToInt32(tmp.Reverse().ToArray(), 0);
+        _rsrcStream.Read(tmp, 0, 4);
+        _map.Header.ResourceMapOff = BitConverter.ToInt32(tmp.Reverse().ToArray(), 0);
+        _rsrcStream.Read(tmp, 0, 4);
+        _map.Header.ResourceDataLen = BitConverter.ToInt32(tmp.Reverse().ToArray(), 0);
+        _rsrcStream.Read(tmp, 0, 4);
+        _map.Header.ResourceMapLen = BitConverter.ToInt32(tmp.Reverse().ToArray(), 0);
+
+        if(_map.Header.ResourceDataOff != _header.ResourceDataOff ||
+           _map.Header.ResourceDataLen != _header.ResourceDataLen ||
+           _map.Header.ResourceMapOff  != _header.ResourceMapOff  ||
+           _map.Header.ResourceMapLen  != _header.ResourceMapLen)
             throw new InvalidCastException("Header copy is not same as header.");
 
-        rsrcStream.Read(tmp, 0, 4);
-        map.handleToNextMap = BitConverter.ToUInt32(tmp.Reverse().ToArray(), 0);
-        tmp                 = new byte[2];
-        rsrcStream.Read(tmp, 0, 2);
-        map.fileRefNo = BitConverter.ToUInt16(tmp.Reverse().ToArray(), 0);
-        rsrcStream.Read(tmp, 0, 2);
-        map.attributes = BitConverter.ToUInt16(tmp.Reverse().ToArray(), 0);
-        rsrcStream.Read(tmp, 0, 2);
-        map.typeListOff = BitConverter.ToInt16(tmp.Reverse().ToArray(), 0);
-        rsrcStream.Read(tmp, 0, 2);
-        map.nameListOff = BitConverter.ToInt16(tmp.Reverse().ToArray(), 0);
+        _rsrcStream.Read(tmp, 0, 4);
+        _map.HandleToNextMap = BitConverter.ToUInt32(tmp.Reverse().ToArray(), 0);
+        tmp                  = new byte[2];
+        _rsrcStream.Read(tmp, 0, 2);
+        _map.FileRefNo = BitConverter.ToUInt16(tmp.Reverse().ToArray(), 0);
+        _rsrcStream.Read(tmp, 0, 2);
+        _map.Attributes = BitConverter.ToUInt16(tmp.Reverse().ToArray(), 0);
+        _rsrcStream.Read(tmp, 0, 2);
+        _map.TypeListOff = BitConverter.ToInt16(tmp.Reverse().ToArray(), 0);
+        _rsrcStream.Read(tmp, 0, 2);
+        _map.NameListOff = BitConverter.ToInt16(tmp.Reverse().ToArray(), 0);
 
         // Number of types is part of the resource type list not of the map
 
-        rsrcStream.Seek(header.resourceMapOff + map.typeListOff, SeekOrigin.Begin);
-        rsrcStream.Read(tmp, 0, 2);
-        map.numberOfTypes = BitConverter.ToUInt16(tmp.Reverse().ToArray(), 0);
+        _rsrcStream.Seek(_header.ResourceMapOff + _map.TypeListOff, SeekOrigin.Begin);
+        _rsrcStream.Read(tmp, 0, 2);
+        _map.NumberOfTypes = BitConverter.ToUInt16(tmp.Reverse().ToArray(), 0);
 
-        resourceTypeList = new Dictionary<uint, ResourceTypeListItem>();
-        osTypes          = new List<uint>();
+        _resourceTypeList = new Dictionary<uint, ResourceTypeListItem>();
+        _osTypes          = new List<uint>();
 
-        for(int i = 0; i <= map.numberOfTypes; i++)
+        for(int i = 0; i <= _map.NumberOfTypes; i++)
         {
-            ResourceTypeListItem typeList = new ResourceTypeListItem();
+            ResourceTypeListItem typeList = new();
             tmp = new byte[4];
-            rsrcStream.Read(tmp, 0, 4);
-            typeList.type = BitConverter.ToUInt32(tmp.Reverse().ToArray(), 0);
+            _rsrcStream.Read(tmp, 0, 4);
+            typeList.Type = BitConverter.ToUInt32(tmp.Reverse().ToArray(), 0);
             tmp           = new byte[2];
-            rsrcStream.Read(tmp, 0, 2);
-            typeList.resources = BitConverter.ToUInt16(tmp.Reverse().ToArray(), 0);
-            rsrcStream.Read(tmp, 0, 2);
-            typeList.referenceOff = BitConverter.ToInt16(tmp.Reverse().ToArray(), 0);
+            _rsrcStream.Read(tmp, 0, 2);
+            typeList.Resources = BitConverter.ToUInt16(tmp.Reverse().ToArray(), 0);
+            _rsrcStream.Read(tmp, 0, 2);
+            typeList.ReferenceOff = BitConverter.ToInt16(tmp.Reverse().ToArray(), 0);
 
-            resourceTypeList.Add(typeList.type, typeList);
-            osTypes.Add(typeList.type);
+            _resourceTypeList.Add(typeList.Type, typeList);
+            _osTypes.Add(typeList.Type);
         }
 
-        resourceCache = new Dictionary<uint, Resource>();
+        _resourceCache = new Dictionary<uint, Resource>();
     }
 
-    /// <summary>
-    ///     Gets the resources with indicated type
-    /// </summary>
+    /// <summary>Gets the resources with indicated type</summary>
     /// <returns>The resource.</returns>
     /// <param name="OSType">OSType.</param>
     public Resource GetResource(uint OSType)
     {
-        Resource rsrc;
+        if(_resourceCache.TryGetValue(OSType, out Resource rsrc))
+            return rsrc;
 
-        if(resourceCache.TryGetValue(OSType, out rsrc)) return rsrc;
+        if(!_resourceTypeList.TryGetValue(OSType, out ResourceTypeListItem typeList))
+            return null;
 
-        ResourceTypeListItem typeList;
-        if(!resourceTypeList.TryGetValue(OSType, out typeList)) return null;
+        rsrc = new Resource(_rsrcStream, (ushort)(typeList.Resources + 1),
+                            _header.ResourceMapOff + _map.TypeListOff + typeList.ReferenceOff - 2,
+                            _header.ResourceMapOff + _map.NameListOff, _header.ResourceDataOff, OSType);
 
-        rsrc = new Resource(rsrcStream, (ushort)(typeList.resources + 1),
-                            header.resourceMapOff + map.typeListOff + typeList.referenceOff - 2,
-                            header.resourceMapOff                                           + map.nameListOff,
-                            header.resourceDataOff, OSType);
-
-        resourceCache.Add(OSType, rsrc);
+        _resourceCache.Add(OSType, rsrc);
 
         return rsrc;
     }
 
-    /// <summary>
-    ///     Gets all OSTypes stored in this resource fork
-    /// </summary>
+    /// <summary>Gets all OSTypes stored in this resource fork</summary>
     /// <returns>The types.</returns>
-    public uint[] GetTypes() => osTypes.ToArray();
+    public uint[] GetTypes() => _osTypes.ToArray();
 
-    /// <summary>
-    ///     Returns true if the specified OSType is present in this resource fork.
-    /// </summary>
+    /// <summary>Returns true if the specified OSType is present in this resource fork.</summary>
     /// <param name="OSType">OSType.</param>
-    public bool ContainsKey(uint OSType) => resourceTypeList.ContainsKey(OSType);
+    public bool ContainsKey(uint OSType) => _resourceTypeList.ContainsKey(OSType);
 }

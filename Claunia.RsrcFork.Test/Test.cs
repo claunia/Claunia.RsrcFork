@@ -35,17 +35,20 @@ public class Test
 {
     readonly byte[] DC42_Vers =
     {
-        0x06, 0x40, 0x80, 0x00, 0x00, 0x00, 0x09, 0x44, 0x69, 0x73, 0x6B, 0x20, 0x43, 0x6F, 0x70, 0x79, 0x1C,
-        0x34, 0x2E, 0x32, 0x2C, 0x20, 0x64, 0x61, 0x74, 0x61, 0x20, 0x63, 0x68, 0x65, 0x63, 0x6B, 0x73, 0x75,
-        0x6D, 0x3D, 0x24, 0x41, 0x35, 0x31, 0x34, 0x37, 0x46, 0x37, 0x45
+        0x06, 0x40, 0x80, 0x00, 0x00, 0x00, 0x09, 0x44, 0x69, 0x73, 0x6B, 0x20, 0x43, 0x6F, 0x70, 0x79, 0x1C, 0x34,
+        0x2E, 0x32, 0x2C, 0x20, 0x64, 0x61, 0x74, 0x61, 0x20, 0x63, 0x68, 0x65, 0x63, 0x6B, 0x73, 0x75, 0x6D, 0x3D,
+        0x24, 0x41, 0x35, 0x31, 0x34, 0x37, 0x46, 0x37, 0x45
     };
-    readonly byte[] DC42_Str = {0x09, 0x44, 0x69, 0x73, 0x6B, 0x20, 0x43, 0x6F, 0x70, 0x79};
+    readonly byte[] DC42_Str =
+    {
+        0x09, 0x44, 0x69, 0x73, 0x6B, 0x20, 0x43, 0x6F, 0x70, 0x79
+    };
 
     [Test]
     public void TestDC42()
     {
-        FileStream   dc42Stream = new FileStream("Samples/DiskCopy42.rsrc", FileMode.Open, FileAccess.Read);
-        ResourceFork rsrc       = new ResourceFork(dc42Stream);
+        var dc42Stream = new FileStream("Samples/DiskCopy42.rsrc", FileMode.Open, FileAccess.Read);
+        var rsrc       = new ResourceFork(dc42Stream);
 
         uint[] types = rsrc.GetTypes();
         Assert.AreEqual(0x53545220, types[0]);
@@ -56,7 +59,7 @@ public class Test
 
         short[] str_Ids = str_.GetIds();
         Assert.AreEqual(-16396, str_Ids[0]);
-        Assert.AreEqual(10,     str_.GetLength(-16396));
+        Assert.AreEqual(10, str_.GetLength(-16396));
 
         byte[] str1 = str_.GetResource(-16396);
         Assert.AreEqual(DC42_Str, str1);
@@ -67,7 +70,7 @@ public class Test
         Resource vers = rsrc.GetResource(0x76657273);
         Assert.IsNotNull(vers);
         short[] versIds = vers.GetIds();
-        Assert.AreEqual(1,  versIds[0]);
+        Assert.AreEqual(1, versIds[0]);
         Assert.AreEqual(45, vers.GetLength(1));
 
         byte[] vers1 = vers.GetResource(1);
@@ -76,21 +79,21 @@ public class Test
         string versStr = vers.GetName(1);
         Assert.IsNull(versStr);
 
-        Version versDec = new Version(vers1);
-        Assert.AreEqual(6,                              versDec.MajorVersion);
-        Assert.AreEqual(40,                             versDec.MinorVersion);
+        var versDec = new Version(vers1);
+        Assert.AreEqual(6, versDec.MajorVersion);
+        Assert.AreEqual(40, versDec.MinorVersion);
         Assert.AreEqual(Version.DevelopmentStage.Final, versDec.DevStage);
-        Assert.AreEqual(0,                              versDec.PreReleaseVersion);
-        Assert.AreEqual(0,                              versDec.RegionCode);
-        Assert.AreEqual("Disk Copy",                    versDec.VersionString);
+        Assert.AreEqual(0, versDec.PreReleaseVersion);
+        Assert.AreEqual(0, versDec.RegionCode);
+        Assert.AreEqual("Disk Copy", versDec.VersionString);
         Assert.AreEqual("4.2, data checksum=$A5147F7E", versDec.VersionMessage);
     }
 
     [Test]
     public void TestDC6()
     {
-        FileStream   dc6Stream = new FileStream("Samples/DiskCopy6.rsrc", FileMode.Open, FileAccess.Read);
-        ResourceFork rsrc      = new ResourceFork(dc6Stream);
+        var dc6Stream = new FileStream("Samples/DiskCopy6.rsrc", FileMode.Open, FileAccess.Read);
+        var rsrc      = new ResourceFork(dc6Stream);
 
         uint[] types = rsrc.GetTypes();
         Assert.AreEqual(0x53545220, types[0]);
@@ -103,7 +106,7 @@ public class Test
 
         short[] str_Ids = str_.GetIds();
         Assert.AreEqual(-16396, str_Ids[0]);
-        Assert.AreEqual(10,     str_.GetLength(-16396));
+        Assert.AreEqual(10, str_.GetLength(-16396));
 
         byte[] str1 = str_.GetResource(-16396);
         Assert.AreEqual(DC42_Str, str1);
@@ -114,7 +117,7 @@ public class Test
         Resource vers = rsrc.GetResource(0x76657273);
         Assert.IsNotNull(vers);
         short[] versIds = vers.GetIds();
-        Assert.AreEqual(1,  versIds[0]);
+        Assert.AreEqual(1, versIds[0]);
         Assert.AreEqual(66, vers.GetLength(1));
 
         string versStr = vers.GetName(1);
@@ -136,25 +139,25 @@ public class Test
         string bceSStr = bceS.GetName(128);
         Assert.IsNull(bceSStr);
 
-        byte[]  vers1   = vers.GetResource(1);
-        Version versDec = new Version(vers1);
-        Assert.AreEqual(6,                                                versDec.MajorVersion);
-        Assert.AreEqual(40,                                               versDec.MinorVersion);
-        Assert.AreEqual(Version.DevelopmentStage.Final,                   versDec.DevStage);
-        Assert.AreEqual(0,                                                versDec.PreReleaseVersion);
-        Assert.AreEqual(0,                                                versDec.RegionCode);
-        Assert.AreEqual("6.4 Disk Copy",                                  versDec.VersionString);
+        byte[] vers1   = vers.GetResource(1);
+        var    versDec = new Version(vers1);
+        Assert.AreEqual(6, versDec.MajorVersion);
+        Assert.AreEqual(40, versDec.MinorVersion);
+        Assert.AreEqual(Version.DevelopmentStage.Final, versDec.DevStage);
+        Assert.AreEqual(0, versDec.PreReleaseVersion);
+        Assert.AreEqual(0, versDec.RegionCode);
+        Assert.AreEqual("6.4 Disk Copy", versDec.VersionString);
         Assert.AreEqual("Mac? OS HFS 1680K disk image\rCRC28: $07213FB7", versDec.VersionMessage);
     }
 
     [Test]
     public void TestSMI()
     {
-        FileStream   smiStream = new FileStream("Samples/SelfMountingImage.rsrc", FileMode.Open, FileAccess.Read);
-        ResourceFork rsrc      = new ResourceFork(smiStream);
+        var smiStream = new FileStream("Samples/SelfMountingImage.rsrc", FileMode.Open, FileAccess.Read);
+        var rsrc      = new ResourceFork(smiStream);
 
         uint[] types = rsrc.GetTypes();
-        Assert.AreEqual(29,         types.Length);
+        Assert.AreEqual(29, types.Length);
         Assert.AreEqual(0x424E444C, types[0]);
         Assert.AreEqual(0x434F4445, types[1]);
         Assert.AreEqual(0x44415441, types[2]);
@@ -170,8 +173,8 @@ public class Test
         Resource code = rsrc.GetResource(0x434F4445);
         Assert.IsNotNull(code);
         short[] codeIds = code.GetIds();
-        Assert.AreEqual(0,     codeIds[0]);
-        Assert.AreEqual(1,     codeIds[1]);
+        Assert.AreEqual(0, codeIds[0]);
+        Assert.AreEqual(1, codeIds[1]);
         Assert.AreEqual(35130, code.GetLength(1));
         string codeStr = code.GetName(1);
         Assert.AreEqual("First Segment", codeStr); //"First Segment"
@@ -180,38 +183,38 @@ public class Test
         Assert.IsNotNull(bndl);
         short[] bndlIds = bndl.GetIds();
         Assert.AreEqual(128, bndlIds[0]);
-        Assert.AreEqual(28,  bndl.GetLength(128));
+        Assert.AreEqual(28, bndl.GetLength(128));
         string bndlStr = bndl.GetName(128);
         Assert.IsNull(bndlStr);
 
         Resource vers = rsrc.GetResource(0x76657273);
         Assert.IsNotNull(vers);
-        byte[]  vers1   = vers.GetResource(1);
-        Version versDec = new Version(vers1);
-        Assert.AreEqual(1,                                                 versDec.MajorVersion);
-        Assert.AreEqual(10,                                                versDec.MinorVersion);
-        Assert.AreEqual(Version.DevelopmentStage.Beta,                     versDec.DevStage);
-        Assert.AreEqual(6,                                                 versDec.PreReleaseVersion);
-        Assert.AreEqual(0,                                                 versDec.RegionCode);
-        Assert.AreEqual("1.1b6",                                           versDec.VersionString);
+        byte[] vers1   = vers.GetResource(1);
+        var    versDec = new Version(vers1);
+        Assert.AreEqual(1, versDec.MajorVersion);
+        Assert.AreEqual(10, versDec.MinorVersion);
+        Assert.AreEqual(Version.DevelopmentStage.Beta, versDec.DevStage);
+        Assert.AreEqual(6, versDec.PreReleaseVersion);
+        Assert.AreEqual(0, versDec.RegionCode);
+        Assert.AreEqual("1.1b6", versDec.VersionString);
         Assert.AreEqual("1.1b6, Copyright 1997-2001 Apple Computer, Inc.", versDec.VersionMessage);
     }
 
     [Test]
     public void TestUDIF()
     {
-        FileStream   udifStream = new FileStream("Samples/UDIF.rsrc", FileMode.Open, FileAccess.Read);
-        ResourceFork rsrc       = new ResourceFork(udifStream);
+        var udifStream = new FileStream("Samples/UDIF.rsrc", FileMode.Open, FileAccess.Read);
+        var rsrc       = new ResourceFork(udifStream);
 
         uint[] types = rsrc.GetTypes();
-        Assert.AreEqual(2,          types.Length);
+        Assert.AreEqual(2, types.Length);
         Assert.AreEqual(0x626C6B78, types[0]);
         Assert.AreEqual(0x706C7374, types[1]);
 
         Resource blkx = rsrc.GetResource(0x626C6B78);
         Assert.IsNotNull(blkx);
         short[] blkxIds = blkx.GetIds();
-        Assert.AreEqual(0,   blkxIds[0]);
+        Assert.AreEqual(0, blkxIds[0]);
         Assert.AreEqual(524, blkx.GetLength(0));
         string blkxStr = blkx.GetName(0);
         Assert.AreEqual("Whole Device (Apple_XXX : 0)", blkxStr); //"First Segment"
@@ -219,7 +222,7 @@ public class Test
         Resource plst = rsrc.GetResource(0x706C7374);
         Assert.IsNotNull(plst);
         short[] plstIds = plst.GetIds();
-        Assert.AreEqual(0,    plstIds[0]);
+        Assert.AreEqual(0, plstIds[0]);
         Assert.AreEqual(1544, plst.GetLength(0));
         string plstStr = plst.GetName(0);
         Assert.IsNull(plstStr);

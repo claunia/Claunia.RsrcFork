@@ -29,7 +29,7 @@
     <ExternalConsole>true</ExternalConsole>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="Program.cs"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Claunia.RsrcFork\Claunia.RsrcFork.csproj">
