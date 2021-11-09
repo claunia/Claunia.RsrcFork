@@ -3,7 +3,7 @@
   <PropertyGroup>
     <VersionPrefix>1.1</VersionPrefix>
     <Company>Claunia.com</Company>
-    <Copyright>© 2016-2019 Natalia Portillo</Copyright>
+    <Copyright>© 2016-2021 Natalia Portillo</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
     <NeutralLanguage>en-US</NeutralLanguage>
