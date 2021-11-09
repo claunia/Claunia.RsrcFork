@@ -30,152 +30,151 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Claunia.RsrcFork
+namespace Claunia.RsrcFork;
+
+/// <summary>
+///     This class represents a resource type.
+/// </summary>
+public class Resource
 {
+    readonly List<short>                     ids;
+    readonly Dictionary<short, byte[]>       resourceCache;
+    readonly Dictionary<short, string>       resourceNames;
+    readonly Dictionary<short, ResourceData> resources;
+    readonly Stream                          rsrcStream;
+
     /// <summary>
-    ///     This class represents a resource type.
+    ///     Initializates the specified resource type.
     /// </summary>
-    public class Resource
+    /// <param name="stream">Stream where the resources of this reside.</param>
+    /// <param name="resources">How many resource of this type are.</param>
+    /// <param name="referenceListOff">Offset from start of stream to reference list for this type.</param>
+    /// <param name="resourceNameOffset">Offset from start of stream to resource name list.</param>
+    /// <param name="resourceDataOffset">Offset from start of stream to resource data.</param>
+    /// <param name="OSType">Resource type.</param>
+    internal Resource(Stream stream,             ushort resources, long referenceListOff, long resourceNameOffset,
+                      long   resourceDataOffset, uint   OSType)
     {
-        readonly List<short>                     ids;
-        readonly Dictionary<short, byte[]>       resourceCache;
-        readonly Dictionary<short, string>       resourceNames;
-        readonly Dictionary<short, ResourceData> resources;
-        readonly Stream                          rsrcStream;
+        rsrcStream = stream;
+        Dictionary<short, ResourceTypeReferenceListItem> referenceLists =
+            new Dictionary<short, ResourceTypeReferenceListItem>();
+        resourceNames  = new Dictionary<short, string>();
+        this.resources = new Dictionary<short, ResourceData>();
+        ids            = new List<short>();
+        byte[] tmp;
 
-        /// <summary>
-        ///     Initializates the specified resource type.
-        /// </summary>
-        /// <param name="stream">Stream where the resources of this reside.</param>
-        /// <param name="resources">How many resource of this type are.</param>
-        /// <param name="referenceListOff">Offset from start of stream to reference list for this type.</param>
-        /// <param name="resourceNameOffset">Offset from start of stream to resource name list.</param>
-        /// <param name="resourceDataOffset">Offset from start of stream to resource data.</param>
-        /// <param name="OSType">Resource type.</param>
-        internal Resource(Stream stream,             ushort resources, long referenceListOff, long resourceNameOffset,
-                          long   resourceDataOffset, uint   OSType)
+        rsrcStream.Seek(referenceListOff + 2, SeekOrigin.Begin);
+        for(int i = 0; i < resources; i++)
         {
-            rsrcStream = stream;
-            Dictionary<short, ResourceTypeReferenceListItem> referenceLists =
-                new Dictionary<short, ResourceTypeReferenceListItem>();
-            resourceNames  = new Dictionary<short, string>();
-            this.resources = new Dictionary<short, ResourceData>();
-            ids            = new List<short>();
-            byte[] tmp;
+            ResourceTypeReferenceListItem item = new ResourceTypeReferenceListItem();
+            tmp = new byte[2];
+            rsrcStream.Read(tmp, 0, 2);
+            item.id = BitConverter.ToInt16(tmp.Reverse().ToArray(), 0);
+            rsrcStream.Read(tmp, 0, 2);
+            item.nameOff = BitConverter.ToInt16(tmp.Reverse().ToArray(), 0);
+            tmp          = new byte[4];
+            rsrcStream.Read(tmp, 0, 4);
+            item.attributes = tmp[0];
+            tmp[0]          = 0;
+            item.dataOff    = BitConverter.ToInt32(tmp.Reverse().ToArray(), 0);
+            rsrcStream.Read(tmp, 0, 4);
+            item.handle = BitConverter.ToUInt32(tmp.Reverse().ToArray(), 0);
 
-            rsrcStream.Seek(referenceListOff + 2, SeekOrigin.Begin);
-            for(int i = 0; i < resources; i++)
+            referenceLists.Add(item.id, item);
+            ids.Add(item.id);
+        }
+
+        foreach(ResourceTypeReferenceListItem item in referenceLists.Values)
+        {
+            string       name;
+            ResourceData data = new ResourceData();
+
+            if(item.nameOff == -1) name = null;
+            else
             {
-                ResourceTypeReferenceListItem item = new ResourceTypeReferenceListItem();
-                tmp = new byte[2];
-                rsrcStream.Read(tmp, 0, 2);
-                item.id = BitConverter.ToInt16(tmp.Reverse().ToArray(), 0);
-                rsrcStream.Read(tmp, 0, 2);
-                item.nameOff = BitConverter.ToInt16(tmp.Reverse().ToArray(), 0);
-                tmp          = new byte[4];
-                rsrcStream.Read(tmp, 0, 4);
-                item.attributes = tmp[0];
-                tmp[0]          = 0;
-                item.dataOff    = BitConverter.ToInt32(tmp.Reverse().ToArray(), 0);
-                rsrcStream.Read(tmp, 0, 4);
-                item.handle = BitConverter.ToUInt32(tmp.Reverse().ToArray(), 0);
-
-                referenceLists.Add(item.id, item);
-                ids.Add(item.id);
+                rsrcStream.Seek(resourceNameOffset + item.nameOff, SeekOrigin.Begin);
+                byte   nameLen   = (byte)rsrcStream.ReadByte();
+                byte[] nameBytes = new byte[nameLen];
+                rsrcStream.Read(nameBytes, 0, nameLen);
+                // TODO: Use MacRoman
+                name = Encoding.ASCII.GetString(nameBytes);
             }
 
-            foreach(ResourceTypeReferenceListItem item in referenceLists.Values)
-            {
-                string       name;
-                ResourceData data = new ResourceData();
+            rsrcStream.Seek(resourceDataOffset + item.dataOff, SeekOrigin.Begin);
+            tmp = new byte[4];
+            rsrcStream.Read(tmp, 0, 4);
+            data.offset = rsrcStream.Position;
+            data.length = BitConverter.ToUInt32(tmp.Reverse().ToArray(), 0);
 
-                if(item.nameOff == -1) name = null;
-                else
-                {
-                    rsrcStream.Seek(resourceNameOffset + item.nameOff, SeekOrigin.Begin);
-                    byte   nameLen   = (byte)rsrcStream.ReadByte();
-                    byte[] nameBytes = new byte[nameLen];
-                    rsrcStream.Read(nameBytes, 0, nameLen);
-                    // TODO: Use MacRoman
-                    name = Encoding.ASCII.GetString(nameBytes);
-                }
-
-                rsrcStream.Seek(resourceDataOffset + item.dataOff, SeekOrigin.Begin);
-                tmp = new byte[4];
-                rsrcStream.Read(tmp, 0, 4);
-                data.offset = rsrcStream.Position;
-                data.length = BitConverter.ToUInt32(tmp.Reverse().ToArray(), 0);
-
-                resourceNames.Add(item.id, name);
-                this.resources.Add(item.id, data);
-            }
-
-            resourceCache = new Dictionary<short, byte[]>();
+            resourceNames.Add(item.id, name);
+            this.resources.Add(item.id, data);
         }
 
-        /// <summary>
-        ///     Gets the name of the specified resource id, or null if there is no name.
-        /// </summary>
-        /// <returns>The name.</returns>
-        /// <param name="id">Identifier.</param>
-        public string GetName(short id)
-        {
-            string name;
-            return resourceNames.TryGetValue(id, out name) ? name : null;
-        }
+        resourceCache = new Dictionary<short, byte[]>();
+    }
 
-        /// <summary>
-        ///     Gets the resource contents.
-        /// </summary>
-        /// <returns>The resource.</returns>
-        /// <param name="id">Identifier.</param>
-        public byte[] GetResource(short id)
-        {
-            byte[] resource;
+    /// <summary>
+    ///     Gets the name of the specified resource id, or null if there is no name.
+    /// </summary>
+    /// <returns>The name.</returns>
+    /// <param name="id">Identifier.</param>
+    public string GetName(short id)
+    {
+        string name;
+        return resourceNames.TryGetValue(id, out name) ? name : null;
+    }
 
-            if(resourceCache.TryGetValue(id, out resource)) return resource;
+    /// <summary>
+    ///     Gets the resource contents.
+    /// </summary>
+    /// <returns>The resource.</returns>
+    /// <param name="id">Identifier.</param>
+    public byte[] GetResource(short id)
+    {
+        byte[] resource;
 
-            ResourceData data;
+        if(resourceCache.TryGetValue(id, out resource)) return resource;
 
-            if(!resources.TryGetValue(id, out data)) return null;
+        ResourceData data;
 
-            resource = new byte[data.length];
-            rsrcStream.Seek(data.offset, SeekOrigin.Begin);
-            rsrcStream.Read(resource, 0, resource.Length);
+        if(!resources.TryGetValue(id, out data)) return null;
 
-            resourceCache.Add(id, resource);
+        resource = new byte[data.length];
+        rsrcStream.Seek(data.offset, SeekOrigin.Begin);
+        rsrcStream.Read(resource, 0, resource.Length);
 
-            return resource;
-        }
+        resourceCache.Add(id, resource);
 
-        /// <summary>
-        ///     Gets the length of the resource specified by ID.
-        /// </summary>
-        /// <returns>The length.</returns>
-        /// <param name="id">Resource identifier.</param>
-        public long GetLength(short id)
-        {
-            ResourceData data;
-            return !resources.TryGetValue(id, out data) ? 0 : data.length;
-        }
+        return resource;
+    }
 
-        /// <summary>
-        ///     Gets the IDs of all the resources contained by this instance.
-        /// </summary>
-        /// <returns>The identifiers.</returns>
-        public short[] GetIds() => ids.ToArray();
+    /// <summary>
+    ///     Gets the length of the resource specified by ID.
+    /// </summary>
+    /// <returns>The length.</returns>
+    /// <param name="id">Resource identifier.</param>
+    public long GetLength(short id)
+    {
+        ResourceData data;
+        return !resources.TryGetValue(id, out data) ? 0 : data.length;
+    }
 
-        /// <summary>
-        ///     Checks if the resource specified by ID is contained by this instance.
-        /// </summary>
-        /// <returns><c>true</c>, if the resource is contained in this instance, <c>false</c> otherwise.</returns>
-        /// <param name="id">Resource identifier.</param>
-        public bool ContainsId(short id) => ids.Contains(id);
+    /// <summary>
+    ///     Gets the IDs of all the resources contained by this instance.
+    /// </summary>
+    /// <returns>The identifiers.</returns>
+    public short[] GetIds() => ids.ToArray();
 
-        struct ResourceData
-        {
-            public long offset;
-            public long length;
-        }
+    /// <summary>
+    ///     Checks if the resource specified by ID is contained by this instance.
+    /// </summary>
+    /// <returns><c>true</c>, if the resource is contained in this instance, <c>false</c> otherwise.</returns>
+    /// <param name="id">Resource identifier.</param>
+    public bool ContainsId(short id) => ids.Contains(id);
+
+    struct ResourceData
+    {
+        public long offset;
+        public long length;
     }
 }
