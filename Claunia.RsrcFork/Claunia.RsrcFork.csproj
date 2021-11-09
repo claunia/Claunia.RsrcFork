@@ -13,10 +13,10 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Claunia.RsrcFork</RootNamespace>
     <AssemblyName>Claunia.RsrcFork</AssemblyName>
-    <ReleaseVersion>1.1</ReleaseVersion>
+    <ReleaseVersion>1.2</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
     <PackageId>Claunia.RsrcFork</PackageId>
-    <PackageVersion>1.1</PackageVersion>
+    <PackageVersion>1.2</PackageVersion>
     <Authors>Natalia Portillo</Authors>
     <Owners>claunia</Owners>
     <PackageProjectUrl>https://www.github.com/claunia/Claunia.RsrcFork</PackageProjectUrl>
@@ -26,7 +26,7 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-    <PackageReleaseNotes>Support .NET Standard.</PackageReleaseNotes>
+    <PackageReleaseNotes>Update to .NET 6.</PackageReleaseNotes>
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
@@ -60,6 +60,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Resources\"/>
+    <Folder Include="Resources\" />
   </ItemGroup>
 </Project>
